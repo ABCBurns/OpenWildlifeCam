@@ -10,5 +10,6 @@ conda install -c auto picamera
 ## install opencv on ubuntu 18.04
 ```
 conda install -c conda-forge opencv=4.1.0
+conda install -c conda-forge imutils
 ```
 

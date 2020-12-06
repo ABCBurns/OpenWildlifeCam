@@ -1,7 +1,7 @@
 {
     "show_video": true,
     "camera_warmup_time": 2.5,
-    "delta_thresh": 5,
+    "delta_thresh": 10,
     "resolution": [
         640,
         480
