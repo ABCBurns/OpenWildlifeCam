@@ -100,8 +100,8 @@ while True:
 
     motion_rectangles = md.detect_motion(frame)
 
-    for r in motion_rectangles:
-        cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 0, 255), 2)
+    # for r in motion_rectangles:
+    #    cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 0, 255), 2)
 
     combined_rectangles = rectangle.combine_rectangles(motion_rectangles)
     for r in combined_rectangles:
