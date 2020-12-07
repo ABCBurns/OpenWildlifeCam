@@ -3,6 +3,7 @@
 # construct the argument parser and parse the arguments
 import argparse
 import json
+import rectangle
 
 import imutils
 import numpy as np
@@ -97,10 +98,14 @@ while True:
         print("can't read frame")
         break
 
-    motion_rect = md.detect_motion(frame)
+    motion_rectangles = md.detect_motion(frame)
 
-    for r in motion_rect:
-        cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (255, 0, 0), 2)
+    for r in motion_rectangles:
+        cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 0, 255), 2)
+
+    combined_rectangles = rectangle.combine_rectangles(motion_rectangles)
+    for r in combined_rectangles:
+        cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 255, 0), 2)
 
     cv2.imshow('captured frame', frame)
 
