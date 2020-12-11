@@ -102,8 +102,8 @@ if config.clean_store_on_startup:
     shutil.rmtree(config.store_path)
 os.mkdir(config.store_path)
 
-# Define the codec and create VideoWriter object x264
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
+# Define the codec and create VideoWriter object XVID, x264
+fourcc = cv2.VideoWriter_fourcc(*'x264')
 
 cap = cv2.VideoCapture(0)
 
