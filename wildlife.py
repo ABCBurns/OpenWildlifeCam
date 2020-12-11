@@ -2,6 +2,7 @@
 
 # construct the argument parser and parse the arguments
 import argparse
+import datetime
 import json
 import rectangle
 
@@ -60,6 +61,10 @@ class MotionDetection:
             # create box around the contour and add it to return list
             rect_list.append(cv2.boundingRect(c))
 
+        # combined_rectangles = rectangle.combine_rectangles(rect_list)
+        # for r in combined_rectangles:
+        #    cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 255, 0), 2)
+
         # show the resulting frame
         cv2.imshow('prepared frame', frame_gray)
         cv2.imshow('frame delta', frame_delta_thresh)
@@ -76,11 +81,17 @@ resolution = tuple(config["resolution"])
 frame_rate = config["fps"]
 delta_threshold = config["delta_thresh"]
 min_area = config["min_area"]
+min_recording_time_seconds = config["min_recording_time_seconds"]
 
 md = MotionDetection()
 
 # capture video
 average_frame = None
+is_recording = False
+last_activity = None
+recording_status = "OFF"
+recording_color=(255,255,225)
+
 cap = cv2.VideoCapture(0)
 
 # set the width and height, and UNSUCCESSFULLY set the exposure time
@@ -98,14 +109,29 @@ while True:
         print("can't read frame")
         break
 
+    timestamp = datetime.datetime.now()
+
     motion_rectangles = md.detect_motion(frame)
 
-    # for r in motion_rectangles:
-    #    cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 0, 255), 2)
+    motion_status = "no activity"
+    motion_status_color = (255, 255, 255)
+    for r in motion_rectangles:
+        last_activity = datetime.datetime.now()
+        recording_status = "ON"
+        recording_color = (0, 0, 255)
+        motion_status = "activity"
+        motion_status_color = (0, 255, 0)
+        cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), motion_status_color, 1)
 
-    combined_rectangles = rectangle.combine_rectangles(motion_rectangles)
-    for r in combined_rectangles:
-        cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 255, 0), 2)
+    if recording_status == "ON" and last_activity < timestamp and \
+            (timestamp - last_activity).seconds >= min_recording_time_seconds:
+        recording_status = "OFF"
+        recording_color = (255, 255, 255)
+
+    timestamp_str = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
+    cv2.putText(frame, motion_status, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, motion_status_color, 2)
+    cv2.putText(frame, recording_status, (frame.shape[1] - 30, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.35, recording_color, 2)
+    cv2.putText(frame, timestamp_str, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 255, 255), 1)
 
     cv2.imshow('captured frame', frame)
 
