@@ -20,6 +20,10 @@ class WildlifeConfig:
         return self.__config["store_path"]
 
     @property
+    def clean_store_on_startup(self):
+        return self.__config["clean_store_on_startup"]
+
+    @property
     def resolution(self):
         return tuple(self.__config["resolution"])
 

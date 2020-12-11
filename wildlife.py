@@ -3,6 +3,9 @@
 # construct the argument parser and parse the arguments
 import argparse
 import datetime
+import os
+import shutil
+
 import imutils
 import cv2
 
@@ -92,6 +95,15 @@ recording_info = ""
 recording_filename = ""
 start_recording_time = None
 stop_recording_time = None
+video_out = None
+
+# prepare video storage folder
+if config.clean_store_on_startup:
+    shutil.rmtree(config.store_path)
+os.mkdir(config.store_path)
+
+# Define the codec and create VideoWriter object x264
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
 cap = cv2.VideoCapture(0)
 
@@ -121,6 +133,8 @@ while True:
         if recording_status == "OFF":
             start_recording_time = timestamp
             recording_filename = create_video_filename(start_recording_time, config.store_path)
+            video_out = cv2.VideoWriter(recording_filename, fourcc, config.frame_rate,
+                                        (config.resolution[0], config.resolution[1]))
         recording_status = "ON"
         recording_color = (0, 0, 255)
         motion_status = "activity"
@@ -129,6 +143,8 @@ while True:
 
     if recording_status == "ON" and last_activity < timestamp and \
             (timestamp - last_activity).seconds >= config.min_recording_time_seconds:
+        video_out.release()
+        video_out = None
         recording_status = "OFF"
         recording_info = ""
         stop_recording_time = timestamp
@@ -142,6 +158,10 @@ while True:
     cv2.putText(frame, recording_status, (frame.shape[1] - 50, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.35, recording_color, 2)
     cv2.putText(frame, timestamp_str + recording_info, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35
                 , (255, 255, 255), 1)
+
+    # store frame
+    if video_out:
+        video_out.write(frame)
 
     cv2.imshow('captured frame', frame)
 
