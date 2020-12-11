@@ -3,12 +3,9 @@
 # construct the argument parser and parse the arguments
 import argparse
 import datetime
-import json
-import rectangle
-
 import imutils
-import numpy as np
 import cv2
+from config import WildlifeConfig
 
 
 class MotionDetection:
@@ -43,7 +40,7 @@ class MotionDetection:
         frame_delta = cv2.absdiff(frame_gray, cv2.convertScaleAbs(self.average_frame))
 
         # create monochrome frame via threshold and dilate it
-        frame_delta_thresh = cv2.threshold(frame_delta, delta_threshold, 255,
+        frame_delta_thresh = cv2.threshold(frame_delta, config.delta_threshold, 255,
                                            cv2.THRESH_BINARY)[1]
         frame_delta_thresh = cv2.dilate(frame_delta_thresh, None, iterations=5)
 
@@ -56,7 +53,7 @@ class MotionDetection:
         # loop over the contours
         for c in contours:
             # if the contour is too small, ignore it
-            if cv2.contourArea(c) < min_area:
+            if cv2.contourArea(c) < config.min_area:
                 continue
             # create box around the contour and add it to return list
             rect_list.append(cv2.boundingRect(c))
@@ -76,12 +73,8 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--config", required=True,
                 help="path to the JSON configuration file")
 args = vars(ap.parse_args())
-config = json.load(open(args["config"]))
-resolution = tuple(config["resolution"])
-frame_rate = config["fps"]
-delta_threshold = config["delta_thresh"]
-min_area = config["min_area"]
-min_recording_time_seconds = config["min_recording_time_seconds"]
+
+config = WildlifeConfig(args["config"])
 
 md = MotionDetection()
 
@@ -90,20 +83,20 @@ average_frame = None
 is_recording = False
 last_activity = None
 recording_status = "OFF"
-recording_color=(255,255,225)
+recording_color = (255, 255, 225)
 
 cap = cv2.VideoCapture(0)
 
 # set the width and height, and UNSUCCESSFULLY set the exposure time
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
-cap.set(cv2.CAP_PROP_FPS, frame_rate)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, config.resolution[0])
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resolution[1])
+cap.set(cv2.CAP_PROP_FPS, config.frame_rate)
 
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
 while True:
-    # Capture frame-by-frame
+    # capture frames
     ret, frame = cap.read()
     if not ret:
         print("can't read frame")
@@ -124,7 +117,7 @@ while True:
         cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), motion_status_color, 1)
 
     if recording_status == "ON" and last_activity < timestamp and \
-            (timestamp - last_activity).seconds >= min_recording_time_seconds:
+            (timestamp - last_activity).seconds >= config.min_recording_time_seconds:
         recording_status = "OFF"
         recording_color = (255, 255, 255)
 

@@ -1,6 +1,7 @@
 {
     "show_video": true,
-    "delta_thresh": 5,
+    "store_video": true,
+    "delta_threshold": 5,
     "resolution": [
         640,
         480
