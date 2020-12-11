@@ -5,6 +5,7 @@ import argparse
 import datetime
 import imutils
 import cv2
+
 from config import WildlifeConfig
 
 
@@ -68,7 +69,10 @@ class MotionDetection:
         return rect_list
 
 
-# read config
+def create_video_filename(start_time, path):
+    return "{}/{}-wildlife.avi".format(path, start_time.strftime("%Y%m%d-%H%M%S"))
+
+
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--config", required=True,
                 help="path to the JSON configuration file")
@@ -84,6 +88,10 @@ is_recording = False
 last_activity = None
 recording_status = "OFF"
 recording_color = (255, 255, 225)
+recording_info = ""
+recording_filename = ""
+start_recording_time = None
+stop_recording_time = None
 
 cap = cv2.VideoCapture(0)
 
@@ -110,6 +118,9 @@ while True:
     motion_status_color = (255, 255, 255)
     for r in motion_rectangles:
         last_activity = datetime.datetime.now()
+        if recording_status == "OFF":
+            start_recording_time = timestamp
+            recording_filename = create_video_filename(start_recording_time, config.store_path)
         recording_status = "ON"
         recording_color = (0, 0, 255)
         motion_status = "activity"
@@ -119,12 +130,18 @@ while True:
     if recording_status == "ON" and last_activity < timestamp and \
             (timestamp - last_activity).seconds >= config.min_recording_time_seconds:
         recording_status = "OFF"
+        recording_info = ""
+        stop_recording_time = timestamp
         recording_color = (255, 255, 255)
+
+    if config.store_video and recording_status == "ON":
+        recording_info = " | " + recording_filename + " " + str((timestamp - start_recording_time).seconds)
 
     timestamp_str = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
     cv2.putText(frame, motion_status, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, motion_status_color, 2)
-    cv2.putText(frame, recording_status, (frame.shape[1] - 30, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.35, recording_color, 2)
-    cv2.putText(frame, timestamp_str, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 255, 255), 1)
+    cv2.putText(frame, recording_status, (frame.shape[1] - 50, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.35, recording_color, 2)
+    cv2.putText(frame, timestamp_str + recording_info, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35
+                , (255, 255, 255), 1)
 
     cv2.imshow('captured frame', frame)
 

@@ -1,6 +1,7 @@
 {
     "show_video": true,
     "store_video": true,
+    "store_path": "./videostore",
     "delta_threshold": 5,
     "resolution": [
         640,

@@ -16,6 +16,10 @@ class WildlifeConfig:
         return self.__config["store_video"]
 
     @property
+    def store_path(self):
+        return self.__config["store_path"]
+
+    @property
     def resolution(self):
         return tuple(self.__config["resolution"])
 
