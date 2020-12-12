@@ -62,7 +62,6 @@ for capture_frame in camera.capture_continuous(rawCapture, format="bgr", use_vid
     timestamp = datetime.datetime.now()
 
     motion_rectangles = md.detect_motion(frame)
-    rawCapture.truncate(0)
 
     motion_status = "no activity"
     motion_status_color = (255, 255, 255)
@@ -95,7 +94,7 @@ for capture_frame in camera.capture_continuous(rawCapture, format="bgr", use_vid
     cv2.putText(frame, motion_status, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, motion_status_color, 2)
     cv2.putText(frame, recording_status, (frame.shape[1] - 50, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.35, recording_color, 2)
     cv2.putText(frame, timestamp_str + recording_info, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35
-                , (255, 255, 255), 1)
+                , (0, 0, 255), 1)
 
     # store frame
     if video_out and config.store_video:
@@ -103,6 +102,8 @@ for capture_frame in camera.capture_continuous(rawCapture, format="bgr", use_vid
 
     if config.show_video:
         cv2.imshow('captured frame', frame)
+
+    rawCapture.truncate(0)
 
     if cv2.waitKey(1) == ord('q'):
         break

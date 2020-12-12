@@ -20,7 +20,7 @@ class MotionDetection:
         # frame = frame.array
         # if the average frame is None, initialize it
         if self.average_frame is None:
-            print("[INFO] starting background model...")
+            print("starting background model...")
             self.average_frame = frame_gray.copy().astype("float")
             return rect_list
 

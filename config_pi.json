@@ -5,10 +5,10 @@
     "clean_store_on_startup": true,
     "delta_threshold": 5,
     "resolution": [
-        1024,
-        768
+        640,
+        480
     ],
-    "fps": 24,
+    "fps": 16,
     "min_area": 4000,
     "min_recording_time_seconds": 10
 }
