@@ -22,7 +22,6 @@ class MotionDetection:
         if self.average_frame is None:
             print("[INFO] starting background model...")
             self.average_frame = frame_gray.copy().astype("float")
-            # frame.truncate(0)
             return rect_list
 
         # accumulate the weighted average between the current frame and

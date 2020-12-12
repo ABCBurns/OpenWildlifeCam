@@ -49,6 +49,8 @@ camera = PiCamera()
 camera.resolution = config.resolution
 camera.framerate = config.frame_rate
 rawCapture = PiRGBArray(camera, size=config.resolution)
+print("camera model: " + camera.revision)
+print("frame rate: " + str(camera.framerate))
 
 # camera to warmup
 time.sleep(0.1)
