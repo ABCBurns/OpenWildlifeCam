@@ -1,0 +1,14 @@
+{
+    "show_video": false,
+    "store_video": true,
+    "store_path": "./videostore",
+    "clean_store_on_startup": true,
+    "delta_threshold": 5,
+    "resolution": [
+        1024,
+        768
+    ],
+    "fps": 24,
+    "min_area": 4000,
+    "min_recording_time_seconds": 10
+}

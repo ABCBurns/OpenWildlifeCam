@@ -57,7 +57,8 @@ class MotionDetection:
         # for r in combined_rectangles:
         #    cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 255, 0), 2)
 
-        # show the resulting frame
-        cv2.imshow('prepared frame', frame_gray)
-        cv2.imshow('frame delta', frame_delta_thresh)
+        if self.config.show_video:
+            # show the resulting frame
+            cv2.imshow('prepared frame', frame_gray)
+            cv2.imshow('frame delta', frame_delta_thresh)
         return rect_list

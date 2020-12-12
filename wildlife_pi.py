@@ -5,6 +5,10 @@ import datetime
 import os
 import shutil
 import cv2
+import time
+
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
 from config import WildlifeConfig
 from motion import MotionDetection
@@ -40,26 +44,23 @@ os.mkdir(config.store_path)
 # Define the codec and create VideoWriter object XVID, x264
 fourcc = cv2.VideoWriter_fourcc(*'x264')
 
-cap = cv2.VideoCapture(0)
+# initialize the camera and grab a reference to the raw camera capture
+camera = PiCamera()
+camera.resolution = config.resolution
+camera.framerate = config.frame_rate
+rawCapture = PiRGBArray(camera, size=config.resolution)
 
-# set the width and height, and UNSUCCESSFULLY set the exposure time
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, config.resolution[0])
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resolution[1])
-cap.set(cv2.CAP_PROP_FPS, config.frame_rate)
+# camera to warmup
+time.sleep(0.1)
 
-if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
-while True:
-    # capture frames
-    ret, frame = cap.read()
-    if not ret:
-        print("can't read frame")
-        break
+for capture_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    # grab the raw numpy array
+    frame = capture_frame.array
 
     timestamp = datetime.datetime.now()
 
     motion_rectangles = md.detect_motion(frame)
+    rawCapture.truncate(0)
 
     motion_status = "no activity"
     motion_status_color = (255, 255, 255)
@@ -105,5 +106,5 @@ while True:
         break
 
 # When everything done, release the capture
-cap.release()
+# cap.release()
 cv2.destroyAllWindows()
