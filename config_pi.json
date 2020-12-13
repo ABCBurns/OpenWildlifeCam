@@ -1,4 +1,5 @@
 {
+    "system" : "raspberrypi",
     "show_video": false,
     "store_video": true,
     "store_path": "./videostore",

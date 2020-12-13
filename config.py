@@ -8,6 +8,10 @@ class WildlifeConfig:
         self.__config = json.load(open(config_name))
 
     @property
+    def system(self):
+        return self.__config["system"]
+
+    @property
     def show_video(self):
         return self.__config["show_video"]
 

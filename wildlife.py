@@ -30,32 +30,24 @@ args = vars(ap.parse_args())
 
 config = WildlifeConfig(args["config"])
 
-md = MotionDetection(config)
-
 # prepare video storage folder
 if config.clean_store_on_startup:
     shutil.rmtree(config.store_path)
 os.mkdir(config.store_path)
 
-# Define the codec and create VideoWriter object XVID, x264
+if config.system == "raspberrypi":
+    from capture_picamera import CapturePicamera as Capture
+else:
+    from capture_opencv import CaptureOpencv as Capture
+
+cap = Capture(config)
+
+md = MotionDetection(config)
+
 fourcc = cv2.VideoWriter_fourcc(*'x264')
 
-cap = cv2.VideoCapture(0)
-
-# set the width and height, and UNSUCCESSFULLY set the exposure time
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, config.resolution[0])
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, config.resolution[1])
-cap.set(cv2.CAP_PROP_FPS, config.frame_rate)
-
-if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
 while True:
-    # capture frames
-    ret, frame = cap.read()
-    if not ret:
-        print("can't read frame")
-        break
+    frame = cap.capture_frame()
 
     timestamp = datetime.datetime.now()
 
@@ -105,5 +97,4 @@ while True:
         break
 
 # When everything done, release the capture
-cap.release()
 cv2.destroyAllWindows()
