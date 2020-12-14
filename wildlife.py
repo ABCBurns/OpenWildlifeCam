@@ -36,7 +36,7 @@ if config.clean_store_on_startup:
 os.mkdir(config.store_path)
 
 if config.system == "raspberrypi":
-    from capture_picamera import CapturePicamera as Capture
+    from capture_picamera import CapturePiCamera as Capture
 else:
     from capture_opencv import CaptureOpencv as Capture
 
@@ -92,9 +92,7 @@ while True:
 
     if config.show_video:
         cv2.imshow('captured frame', frame)
+        if cv2.waitKey(1) == ord('q'):
+            break
 
-    if cv2.waitKey(1) == ord('q'):
-        break
-
-# When everything done, release the capture
 cv2.destroyAllWindows()

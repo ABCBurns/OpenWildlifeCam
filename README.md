@@ -54,6 +54,9 @@ sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
 // Install libraries  additional OpenCV dependencies
 sudo apt-get install libatlas-base-dev gfortran
 
+// Optional: If you want to show the videos on the raspberry
+sudo apt-get install libgtk2.0-dev
+
 // download and unzip opencv
 cd ~/Downloads
 wget -O opencv-3.4.3.zip http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/3.4.3/opencv-3.4.3.zip/download
