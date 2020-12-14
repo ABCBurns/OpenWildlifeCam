@@ -24,6 +24,10 @@ class WildlifeConfig:
         return self.__config["store_path"]
 
     @property
+    def motion_detection(self):
+        return self.__config["motion_detection"]
+
+    @property
     def clean_store_on_startup(self):
         return self.__config["clean_store_on_startup"]
 

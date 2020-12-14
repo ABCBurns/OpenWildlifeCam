@@ -5,9 +5,19 @@ import datetime
 import os
 import shutil
 import cv2
+from signal import signal, SIGINT
+from imutils.video import FPS
 
 from config import WildlifeConfig
 from motion import MotionDetection
+
+exit_by_handler = False
+
+
+def signal_handler(signal_received, f):
+    global exit_by_handler
+    print('SIGINT or CTRL-C detected. Exiting gracefully')
+    exit_by_handler = True
 
 
 def create_video_filename(start_time, path):
@@ -23,6 +33,8 @@ start_recording_time = None
 stop_recording_time = None
 video_out = None
 
+signal(SIGINT, signal_handler)
+
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--config", required=True,
                 help="path to the JSON configuration file")
@@ -36,7 +48,8 @@ if config.clean_store_on_startup:
 os.mkdir(config.store_path)
 
 if config.system == "raspberrypi":
-    from capture_picamera import CapturePiCamera as Capture
+    # from capture_picamera import CapturePiCamera as Capture
+    from capture_picamera_threaded import CapturePiCameraThreaded as Capture
 else:
     from capture_opencv import CaptureOpencv as Capture
 
@@ -46,12 +59,22 @@ md = MotionDetection(config)
 
 fourcc = cv2.VideoWriter_fourcc(*'x264')
 
+motion_rectangles = [(0, 0, config.resolution[0], config.resolution[1])]
+
+cap.start()
+
+fps = FPS().start()
+
 while True:
     frame = cap.capture_frame()
 
+    if frame is None:
+        continue
+
     timestamp = datetime.datetime.now()
 
-    motion_rectangles = md.detect_motion(frame)
+    if config.motion_detection:
+        motion_rectangles = md.detect_motion(frame)
 
     motion_status = "no activity"
     motion_status_color = (255, 255, 255)
@@ -95,4 +118,15 @@ while True:
         if cv2.waitKey(1) == ord('q'):
             break
 
-cv2.destroyAllWindows()
+    if exit_by_handler:
+        break
+
+    fps.update()
+
+# shutdown
+fps.stop()
+print("elapsed time: {:.2f}".format(fps.elapsed()))
+print("approx. FPS: {:.2f}".format(fps.fps()))
+cap.stop()
+if config.show_video:
+    cv2.destroyAllWindows()

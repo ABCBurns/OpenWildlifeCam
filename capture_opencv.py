@@ -14,7 +14,10 @@ class CaptureOpencv:
             print("Cannot open camera")
             exit()
 
-    def __del__(self):
+    def start(self):
+        return self
+
+    def stop(self):
         self.cap.release()
 
     def capture_frame(self):

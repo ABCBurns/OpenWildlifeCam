@@ -17,6 +17,13 @@ class CapturePiCamera:
         # camera to warmup
         time.sleep(0.1)
 
+    def start(self):
+        return self
+
+    def stop(self):
+        self.raw_capture.close()
+        self.camera.close()
+
     def capture_frame(self):
         self.camera.capture(self.raw_capture, format="bgr", use_video_port=True)
         # grab the raw numpy array
