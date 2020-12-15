@@ -130,6 +130,7 @@ while True:
 fps.stop()
 print("elapsed time: {:.2f}".format(fps.elapsed()))
 print("approx. FPS: {:.2f}".format(fps.fps()))
+writer.stop()
 capture.stop()
 if config.show_video:
     cv2.destroyAllWindows()

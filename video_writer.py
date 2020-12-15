@@ -1,4 +1,5 @@
 from queue import Queue
+from queue import Empty
 from threading import Thread
 
 import cv2
@@ -42,7 +43,7 @@ class AsyncVideoWriter:
         while not self.stopped:
             try:
                 frame = self.frame_queue.get(block=True, timeout=1)
-            except Queue.Empty:
+            except Empty:
                 print("Queue empty")
                 continue
             video_out.write(frame)
