@@ -68,15 +68,18 @@ capture.start()
 
 fps = FPS().start()
 
+frame_count = 0
 while True:
     frame = capture.read()
 
     if frame is None:
         continue
 
+    frame_count += 1
+
     timestamp = datetime.datetime.now()
 
-    if config.motion_detection:
+    if config.motion_detection and frame_count % 3 == 0:
         motion_rectangles = md.detect_motion(frame)
 
     motion_status = "no activity"
@@ -129,7 +132,7 @@ while True:
 
 # shutdown
 fps.stop()
-print("elapsed time: {:.2f}".format(fps.elapsed()))
+print("elapsed time: {:.2f} s".format(fps.elapsed()))
 print("approx. FPS: {:.2f}".format(fps.fps()))
 writer.stop()
 capture.stop()

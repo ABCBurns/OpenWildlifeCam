@@ -21,7 +21,7 @@ class MotionDetection:
 
         # if the average frame is None, initialize it
         if self.average_frame is None:
-            print("starting background model...")
+            print("create initial average frame (background model)")
             self.average_frame = frame_gray.copy().astype("float")
             return rect_list
 
@@ -37,7 +37,7 @@ class MotionDetection:
         # create monochrome frame via threshold and dilate it
         frame_delta_thresh = cv2.threshold(frame_delta, self.config.delta_threshold, 255,
                                            cv2.THRESH_BINARY)[1]
-        frame_delta_thresh = cv2.dilate(frame_delta_thresh, None, iterations=5)
+        frame_delta_thresh = cv2.dilate(frame_delta_thresh, None, iterations=2)
 
         # extract contours an draw them in the origin frame
         contours = cv2.findContours(frame_delta_thresh.copy(), cv2.RETR_EXTERNAL,
