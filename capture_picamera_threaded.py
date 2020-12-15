@@ -1,4 +1,5 @@
 import time
+from queue import Queue
 from threading import Thread
 
 from picamera.array import PiRGBArray
@@ -15,28 +16,28 @@ class CapturePiCameraThreaded:
         self.raw_capture = PiRGBArray(self.camera, size=config.resolution)
         print("camera model: " + self.camera.revision)
         print("frame rate: " + str(self.camera.framerate))
-        self.stream = self.camera.capture_continuous(self.raw_capture, format="bgr", use_video_port=True)
         self.frame = None
         self.stopped = False
+        self.frame_queue = Queue(128)
         time.sleep(0.1)
 
     def start(self):
-        Thread(target=self.capture_thread, args=()).start()
+        Thread(target=self._capture_thread, args=()).start()
         return self
 
     def stop(self):
         self.stopped = True
 
-    def capture_frame(self):
-        return self.frame
+    def read(self):
+        return self.frame_queue.get()
 
-    def capture_thread(self):
-        for f in self.stream:
-            self.frame = f.array
-            self.raw_capture.truncate(0)
+    def _capture_thread(self):
+        while not self.stopped:
+            if not self.frame_queue.full():
+                self.camera.capture(self.raw_capture, format="bgr", use_video_port=True)
+                frame = self.raw_capture.array
+                self.raw_capture.truncate(0)
+                self.frame_queue.put(frame)
+            else:
+                print("capture queue is full")
 
-            if self.stopped:
-                self.stream.close()
-                self.raw_capture.close()
-                self.camera.close()
-                return

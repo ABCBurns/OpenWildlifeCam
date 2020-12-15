@@ -20,6 +20,6 @@ class CaptureOpencv:
     def stop(self):
         self.cap.release()
 
-    def capture_frame(self):
+    def read(self):
         ret, frame = self.cap.read()
         return frame

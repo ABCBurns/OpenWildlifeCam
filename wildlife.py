@@ -6,6 +6,8 @@ import os
 import shutil
 import cv2
 from signal import signal, SIGINT
+
+import imutils
 from imutils.video import FPS
 
 from config import WildlifeConfig
@@ -53,7 +55,7 @@ if config.system == "raspberrypi":
 else:
     from capture_opencv import CaptureOpencv as Capture
 
-cap = Capture(config)
+capture = Capture(config)
 
 md = MotionDetection(config)
 
@@ -61,15 +63,17 @@ fourcc = cv2.VideoWriter_fourcc(*'x264')
 
 motion_rectangles = [(0, 0, config.resolution[0], config.resolution[1])]
 
-cap.start()
+capture.start()
 
 fps = FPS().start()
 
 while True:
-    frame = cap.capture_frame()
+    frame = capture.read()
 
     if frame is None:
         continue
+
+    # frame = imutils.resize(frame, width=400)
 
     timestamp = datetime.datetime.now()
 
@@ -127,6 +131,6 @@ while True:
 fps.stop()
 print("elapsed time: {:.2f}".format(fps.elapsed()))
 print("approx. FPS: {:.2f}".format(fps.fps()))
-cap.stop()
+capture.stop()
 if config.show_video:
     cv2.destroyAllWindows()
