@@ -12,6 +12,7 @@ from imutils.video import FPS
 
 from config import WildlifeConfig
 from motion import MotionDetection
+from video_writer import AsyncVideoWriter
 
 exit_by_handler = False
 
@@ -57,9 +58,9 @@ else:
 
 capture = Capture(config)
 
-md = MotionDetection(config)
+writer = AsyncVideoWriter(config)
 
-fourcc = cv2.VideoWriter_fourcc(*'x264')
+md = MotionDetection(config)
 
 motion_rectangles = [(0, 0, config.resolution[0], config.resolution[1])]
 
@@ -87,8 +88,8 @@ while True:
         if recording_status == "OFF":
             start_recording_time = timestamp
             recording_filename = create_video_filename(start_recording_time, config.store_path)
-            video_out = cv2.VideoWriter(recording_filename, fourcc, config.frame_rate,
-                                        (config.resolution[0], config.resolution[1]))
+            writer.start(recording_filename)
+
         recording_status = "ON"
         recording_color = (0, 0, 255)
         motion_status = "activity"
@@ -97,8 +98,7 @@ while True:
 
     if recording_status == "ON" and last_activity < timestamp and \
             (timestamp - last_activity).seconds >= config.min_recording_time_seconds:
-        video_out.release()
-        video_out = None
+        writer.stop()
         recording_status = "OFF"
         recording_info = ""
         stop_recording_time = timestamp
@@ -114,8 +114,7 @@ while True:
                 , (255, 255, 255), 1)
 
     # store frame
-    if video_out and config.store_video:
-        video_out.write(frame)
+    writer.write(frame)
 
     if config.show_video:
         cv2.imshow('captured frame', frame)
