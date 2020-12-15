@@ -16,7 +16,6 @@ class CapturePiCameraThreaded:
         self.raw_capture = PiRGBArray(self.camera, size=config.resolution)
         print("camera model: " + self.camera.revision)
         print("frame rate: " + str(self.camera.framerate))
-        self.frame = None
         self.stopped = False
         self.frame_queue = Queue(128)
         time.sleep(0.1)

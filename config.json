@@ -11,6 +11,6 @@
         480
     ],
     "fps": 30,
-    "min_area": 4000,
+    "min_area": 2000,
     "min_recording_time_seconds": 10
 }

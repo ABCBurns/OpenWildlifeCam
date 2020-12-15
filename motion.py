@@ -9,15 +9,16 @@ class MotionDetection:
         self.average_frame = None
         self.config = config
 
-    def detect_motion(self, frame_capture):
+    def detect_motion(self, frame_input):
         rect_list = []
 
-        # resize the frame, convert it to grayscale, and blur it
-        # frame = imutils.resize(frame, width=500)
+        # resize input frame, convert it to grayscale and blur it
+        frame_capture = imutils.resize(frame_input, width=400)
+        width_ratio = frame_input.shape[0] / frame_capture.shape[0]
+        height_ratio = frame_input.shape[0] / frame_capture.shape[0]
         frame_gray = cv2.cvtColor(frame_capture, cv2.COLOR_BGR2GRAY)
         frame_gray = cv2.GaussianBlur(frame_gray, (21, 21), 0)
 
-        # frame = frame.array
         # if the average frame is None, initialize it
         if self.average_frame is None:
             print("starting background model...")
@@ -42,7 +43,6 @@ class MotionDetection:
         contours = cv2.findContours(frame_delta_thresh.copy(), cv2.RETR_EXTERNAL,
                                     cv2.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)
-        cv2.drawContours(frame_gray, contours, -1, (0, 255, 0), 1)
 
         # loop over the contours
         for c in contours:
@@ -56,8 +56,17 @@ class MotionDetection:
         # for r in combined_rectangles:
         #    cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 255, 0), 2)
 
+        scaled_rect_list = []
+        for r in rect_list:
+            scaled_rect_list.append(
+                (int(r[0] * width_ratio), int(r[1] * height_ratio), int(r[2] * width_ratio), int(r[3] * height_ratio)))
+
         if self.config.show_video:
             # show the resulting frame
+            cv2.drawContours(frame_gray, contours, -1, (0, 255, 0), 1)
+            for r in rect_list:
+                cv2.rectangle(frame_gray, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (255, 255, 255), 1)
             cv2.imshow('prepared frame', frame_gray)
             cv2.imshow('frame delta', frame_delta_thresh)
-        return rect_list
+
+        return scaled_rect_list  # rect_list

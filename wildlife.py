@@ -74,8 +74,6 @@ while True:
     if frame is None:
         continue
 
-    # frame = imutils.resize(frame, width=400)
-
     timestamp = datetime.datetime.now()
 
     if config.motion_detection:
@@ -88,7 +86,8 @@ while True:
         if recording_status == "OFF":
             start_recording_time = timestamp
             recording_filename = create_video_filename(start_recording_time, config.store_path)
-            writer.start(recording_filename)
+            if config.store_video:
+                writer.start(recording_filename)
 
         recording_status = "ON"
         recording_color = (0, 0, 255)
@@ -98,7 +97,8 @@ while True:
 
     if recording_status == "ON" and last_activity < timestamp and \
             (timestamp - last_activity).seconds >= config.min_recording_time_seconds:
-        writer.stop()
+        if config.store_video:
+            writer.stop()
         recording_status = "OFF"
         recording_info = ""
         stop_recording_time = timestamp
@@ -114,7 +114,8 @@ while True:
                 , (255, 255, 255), 1)
 
     # store frame
-    writer.write(frame)
+    if config.store_video:
+        writer.write(frame)
 
     if config.show_video:
         cv2.imshow('captured frame', frame)
