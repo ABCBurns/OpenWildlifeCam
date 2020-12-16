@@ -1,7 +1,7 @@
 from queue import Queue
 from queue import Empty
 from threading import Thread
-import timeit
+import time
 
 import cv2
 
@@ -27,17 +27,18 @@ class AsyncVideoWriter:
             self.filename = filename
             self.writer_thread = Thread(target=self._writer_thread, args=())
             self.writer_thread.start()
-            print("AsyncVideoWriter start")
+            print("AsyncVideoWriter start {} seconds".format(time.perf_counter()))
             return True
         return False
 
     def stop(self):
-        self.stop_time = timeit.timeit()
-        self.stopped = True
-        # never block the main processing loop
-        # if self.writer_thread is not None:
-        #    self.writer_thread.join()
-        print("AsyncVideoWriter stop")
+        if not self.stopped:
+            self.stop_time = time.perf_counter()
+            self.stopped = True
+            # never block the main processing loop
+            # if self.writer_thread is not None:
+            #    self.writer_thread.join()
+            print("AsyncVideoWriter stop {} seconds".format(self.stop_time))
 
     def write(self, frame):
         if not self.stopped:
@@ -59,7 +60,8 @@ class AsyncVideoWriter:
                 continue
             video_out.write(frame)
 
-        finished_time = timeit.timeit()
-        print("AsyncVideoWriter stop, finished. lag {:.2f} seconds".format(finished_time-self.stop_time))
+        finished_time = time.perf_counter()
+        print("AsyncVideoWriter stop, finished {} lag {} seconds"
+              .format(finished_time, finished_time-self.stop_time))
         video_out.release()
         is_writing = False
