@@ -11,7 +11,8 @@ class AsyncVideoWriter:
 
     def __init__(self, config):
         self.config = config
-        self.fourcc = cv2.VideoWriter_fourcc(*'x264')
+        #self.fourcc = cv2.VideoWriter_fourcc(*'x264')
+        self.fourcc = cv2.VideoWriter_fourcc(*self.config.store_codec)
         self.video_out = None
         self.stop_time = None
         self.stopped = True
@@ -27,7 +28,7 @@ class AsyncVideoWriter:
             self.filename = filename
             self.writer_thread = Thread(target=self._writer_thread, args=())
             self.writer_thread.start()
-            print("AsyncVideoWriter start {} seconds".format(time.perf_counter()))
+            print("AsyncVideoWriter start {:.2f} seconds".format(time.perf_counter()))
             return True
         return False
 
@@ -38,7 +39,7 @@ class AsyncVideoWriter:
             # never block the main processing loop
             # if self.writer_thread is not None:
             #    self.writer_thread.join()
-            print("AsyncVideoWriter stop {} seconds".format(self.stop_time))
+            print("AsyncVideoWriter stop {:.2f} s".format(self.stop_time))
 
     def write(self, frame):
         if not self.stopped:
@@ -61,7 +62,7 @@ class AsyncVideoWriter:
             video_out.write(frame)
 
         finished_time = time.perf_counter()
-        print("AsyncVideoWriter stop, finished {} lag {} seconds"
+        print("AsyncVideoWriter stop, finished {:.2f} s, time lag {:.2f} s"
               .format(finished_time, finished_time-self.stop_time))
         video_out.release()
-        is_writing = False
+        self.is_writing = False

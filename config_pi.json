@@ -2,6 +2,7 @@
     "system" : "raspberrypi",
     "show_video": false,
     "store_video": true,
+    "store_codec": "mp4v",
     "store_path": "./videostore",
     "motion_detection": true,
     "clean_store_on_startup": true,

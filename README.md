@@ -74,3 +74,9 @@ sudo make install
 sudo ldconfig
 ```
 
+# The WildLife Config
+```
+// codecs
+x264, h264, mp4v
+```
+
