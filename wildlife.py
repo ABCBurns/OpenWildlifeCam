@@ -35,6 +35,7 @@ recording_filename = ""
 start_recording_time = None
 stop_recording_time = None
 video_out = None
+activity_count_during_recording = 0
 
 signal(SIGINT, signal_handler)
 
@@ -51,8 +52,7 @@ if config.clean_store_on_startup:
 os.mkdir(config.store_path)
 
 if config.system == "raspberrypi":
-    # from capture_picamera import CapturePiCamera as Capture
-    from capture_picamera_threaded import CapturePiCameraThreaded as Capture
+    from capture_picamera import CapturePiCameraAsync as Capture
 else:
     from capture_opencv import CaptureOpencv as Capture
 
@@ -90,8 +90,10 @@ while True:
             start_recording_time = timestamp
             recording_filename = create_video_filename(start_recording_time, config.store_path)
             if config.store_video:
+                activity_count_during_recording = 0
                 writer.start(recording_filename)
 
+        activity_count_during_recording += 1
         recording_status = "ON"
         recording_color = (0, 0, 255)
         motion_status = "activity"
@@ -101,14 +103,15 @@ while True:
     if recording_status == "ON" and last_activity < timestamp and \
             (timestamp - last_activity).seconds >= config.min_recording_time_seconds:
         if config.store_video:
-            writer.stop()
+            writer.stop(activity_count_during_recording)
         recording_status = "OFF"
         recording_info = ""
         stop_recording_time = timestamp
         recording_color = (255, 255, 255)
 
     if config.store_video and recording_status == "ON":
-        recording_info = " | " + recording_filename + " " + str((timestamp - start_recording_time).seconds)
+        recording_info = " | " + recording_filename + " " + str((timestamp - start_recording_time).seconds) + \
+                         " activity: " + str(activity_count_during_recording)
 
     timestamp_str = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
     cv2.putText(frame, motion_status, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, motion_status_color, 2)
@@ -134,7 +137,7 @@ while True:
 fps.stop()
 print("elapsed time: {:.2f} s".format(fps.elapsed()))
 print("approx. FPS: {:.2f}".format(fps.fps()))
-writer.stop()
+writer.stop(0)
 capture.stop()
 if config.show_video:
     cv2.destroyAllWindows()
