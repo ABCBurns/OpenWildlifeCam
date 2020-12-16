@@ -4,6 +4,7 @@
     "store_video": true,
     "store_codec": "mp4v",
     "store_path": "./videostore",
+    "store_activity_count_threshold": 50,
     "motion_detection": true,
     "clean_store_on_startup": true,
     "delta_threshold": 5,

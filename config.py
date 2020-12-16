@@ -28,6 +28,10 @@ class WildlifeConfig:
         return self.__config["store_path"]
 
     @property
+    def store_activity_count_threshold(self):
+        return self.__config["store_activity_count_threshold"]
+
+    @property
     def motion_detection(self):
         return self.__config["motion_detection"]
 

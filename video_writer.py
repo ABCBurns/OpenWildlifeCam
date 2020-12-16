@@ -1,3 +1,4 @@
+import os
 from multiprocessing import Queue
 from queue import Empty
 from threading import Thread
@@ -14,6 +15,7 @@ class AsyncVideoWriter:
         self.video_out = None
         self.stop_time = None
         self.stopped = True
+        self.activity_count = 0
         self.is_writing = False
         self.filename = None
         self.frame_queue = Queue(128)
@@ -34,6 +36,7 @@ class AsyncVideoWriter:
         if not self.stopped:
             self.stop_time = time.perf_counter()
             self.stopped = True
+            self.activity_count = activity_count
             # never block the main processing loop
             # if self.writer_thread is not None:
             #    self.writer_thread.join()
@@ -65,4 +68,7 @@ class AsyncVideoWriter:
         print("AsyncVideoWriter encoding and writing finished {:.2f} s, time lag {:.2f} s"
               .format(finished_time, finished_time-self.stop_time))
         video_out.release()
+        if self.activity_count < self.config.store_activity_count_threshold:
+            print("AsyncVideoWriter remove recording due to less activity {}".format(self.activity_count))
+            os.remove(self.filename)
         self.is_writing = False
