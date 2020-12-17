@@ -49,7 +49,12 @@ class AsyncVideoWriter:
             else:
                 print("[WARNING] Writer queue is full, system will clean up the whole queue. It will result in frame "
                       "drops.")
-                self.frame_queue.clear()
+                try:
+                    while True:
+                        self.frame_queue.get_nowait()
+                except Empty:
+                    pass
+                #self.frame_queue.clear()
 
     def _writer_thread(self):
         video_out = cv2.VideoWriter(self.filename, self.fourcc, self.config.frame_rate,

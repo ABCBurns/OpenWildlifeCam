@@ -1,6 +1,7 @@
 {
     "system" : "dev-host",
     "show_video": true,
+    "show_motion_rect": false,
     "store_video": true,
     "store_codec": "mp4v",
     "store_path": "./videostore",

@@ -82,7 +82,7 @@ while True:
     if config.motion_detection and frame_count % 3 == 0:
         motion_rectangles = md.detect_motion(frame)
 
-    motion_status = "no activity"
+    motion_status = "activity"
     motion_status_color = (255, 255, 255)
     for r in motion_rectangles:
         last_activity = datetime.datetime.now()
@@ -98,7 +98,8 @@ while True:
         recording_color = (0, 0, 255)
         motion_status = "activity"
         motion_status_color = (0, 255, 0)
-        cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), motion_status_color, 1)
+        if config.show_motion_rect:
+            cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), motion_status_color, 1)
 
     if recording_status == "ON" and last_activity < timestamp and \
             (timestamp - last_activity).seconds >= config.min_recording_time_seconds:

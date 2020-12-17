@@ -16,6 +16,10 @@ class WildlifeConfig:
         return self.__config["show_video"]
 
     @property
+    def show_motion_rect(self):
+        return self.__config["show_motion_rect"]
+
+    @property
     def store_video(self):
         return self.__config["store_video"]
 
