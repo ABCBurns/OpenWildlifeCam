@@ -27,7 +27,24 @@ def create_video_filename(start_time, path):
     return "{}/{}-wildlife.avi".format(path, start_time.strftime("%Y%m%d-%H%M%S"))
 
 
+start_recording_threshold_t1 = None
+start_recording_threshold_t2 = None
+
+
+def start_recording_threshold(activity_count):
+    global start_recording_threshold_t1
+    global start_recording_threshold_t2
+    if activity_count % 5 == 0:
+        start_recording_threshold_t2 = start_recording_threshold_t1
+        start_recording_threshold_t1 = datetime.datetime.now()
+        if start_recording_threshold_t2 is not None and (
+                start_recording_threshold_t1 - start_recording_threshold_t2).seconds < 1:
+            return True
+    return False
+
+
 last_activity = None
+
 recording_status = "OFF"
 recording_color = (255, 255, 225)
 recording_info = ""
@@ -35,6 +52,7 @@ recording_filename = ""
 start_recording_time = None
 stop_recording_time = None
 video_out = None
+activity_count_total = 0
 activity_count_during_recording = 0
 
 signal(SIGINT, signal_handler)
@@ -87,7 +105,11 @@ while True:
     motion_status_color = (255, 255, 255)
     if motion_detected:
         last_activity = datetime.datetime.now()
-        if recording_status == "OFF":
+        activity_count_total += 1
+
+        if recording_status == "OFF" and start_recording_threshold(activity_count_total):
+            recording_status = "ON"
+            recording_color = (0, 0, 255)
             start_recording_time = timestamp
             recording_filename = create_video_filename(start_recording_time, config.store_path)
             if config.store_video:
@@ -95,8 +117,6 @@ while True:
                 writer.start(recording_filename)
 
         activity_count_during_recording += 1
-        recording_status = "ON"
-        recording_color = (0, 0, 255)
         motion_status = "activity"
         motion_status_color = (0, 255, 0)
         if motion_rectangles is not None:
