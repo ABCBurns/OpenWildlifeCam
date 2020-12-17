@@ -10,6 +10,7 @@ class MotionDetection:
         self.config = config
 
     def detect_motion(self, frame_input):
+        motion_detected = False
         rect_list = []
 
         # resize input frame, convert it to grayscale and blur it
@@ -23,7 +24,7 @@ class MotionDetection:
         if self.average_frame is None:
             print("create initial average frame (background model)")
             self.average_frame = frame_gray.copy().astype("float")
-            return rect_list
+            return motion_detected, rect_list
 
         # accumulate the weighted average between the current frame and
         # previous frames
@@ -50,7 +51,12 @@ class MotionDetection:
             if cv2.contourArea(c) < self.config.min_area:
                 continue
             # create box around the contour and add it to return list
-            rect_list.append(cv2.boundingRect(c))
+            motion_detected = True
+            if self.config.motion_rectangle:
+                rect_list.append(cv2.boundingRect(c))
+            else:
+                # faster detection path without motion detection frame
+                break
 
         # combined_rectangles = rectangle.combine_rectangles(rect_list)
         # for r in combined_rectangles:
@@ -69,4 +75,4 @@ class MotionDetection:
             cv2.imshow('prepared frame', frame_gray)
             cv2.imshow('frame delta', frame_delta_thresh)
 
-        return scaled_rect_list  # rect_list
+        return motion_detected, scaled_rect_list

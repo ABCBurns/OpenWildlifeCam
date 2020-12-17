@@ -16,10 +16,6 @@ class WildlifeConfig:
         return self.__config["show_video"]
 
     @property
-    def show_motion_rect(self):
-        return self.__config["show_motion_rect"]
-
-    @property
     def store_video(self):
         return self.__config["store_video"]
 
@@ -38,6 +34,10 @@ class WildlifeConfig:
     @property
     def motion_detection(self):
         return self.__config["motion_detection"]
+
+    @property
+    def motion_rectangle(self):
+        return self.__config["motion_rectangle"]
 
     @property
     def clean_store_on_startup(self):

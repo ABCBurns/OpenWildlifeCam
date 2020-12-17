@@ -62,6 +62,7 @@ writer = AsyncVideoWriter(config)
 
 md = MotionDetection(config)
 
+motion_detected = False
 motion_rectangles = [(0, 0, config.resolution[0], config.resolution[1])]
 
 capture.start()
@@ -80,11 +81,11 @@ while True:
     timestamp = datetime.datetime.now()
 
     if config.motion_detection and frame_count % 3 == 0:
-        motion_rectangles = md.detect_motion(frame)
+        motion_detected, motion_rectangles = md.detect_motion(frame)
 
     motion_status = "activity"
     motion_status_color = (255, 255, 255)
-    for r in motion_rectangles:
+    if motion_detected:
         last_activity = datetime.datetime.now()
         if recording_status == "OFF":
             start_recording_time = timestamp
@@ -98,8 +99,9 @@ while True:
         recording_color = (0, 0, 255)
         motion_status = "activity"
         motion_status_color = (0, 255, 0)
-        if config.show_motion_rect:
-            cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), motion_status_color, 1)
+        if motion_rectangles is not None:
+            for r in motion_rectangles:
+                cv2.rectangle(frame, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), motion_status_color, 1)
 
     if recording_status == "ON" and last_activity < timestamp and \
             (timestamp - last_activity).seconds >= config.min_recording_time_seconds:
