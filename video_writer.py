@@ -18,7 +18,7 @@ class AsyncVideoWriter:
         self.activity_count = 0
         self.is_writing = False
         self.filename = None
-        self.frame_queue = Queue(128)
+        self.frame_queue = Queue(256)
         self.writer_thread = None
 
     def start(self, filename):
@@ -49,12 +49,7 @@ class AsyncVideoWriter:
             else:
                 print("[WARNING] Writer queue is full, system will clean up the whole queue. It will result in frame "
                       "drops.")
-                try:
-                    while True:
-                        self.frame_queue.get_nowait()
-                except Empty:
-                    pass
-                #self.frame_queue.clear()
+                self._clean_queue()
 
     def _writer_thread(self):
         video_out = cv2.VideoWriter(self.filename, self.fourcc, self.config.frame_rate,
@@ -77,3 +72,11 @@ class AsyncVideoWriter:
             print("AsyncVideoWriter remove recording due to less activity {}".format(self.activity_count))
             os.remove(self.filename)
         self.is_writing = False
+
+    def _clean_queue(self):
+        try:
+            while True:
+                self.frame_queue.get_nowait()
+        except Empty:
+            pass
+

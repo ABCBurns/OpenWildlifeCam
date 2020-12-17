@@ -43,6 +43,8 @@ class CapturePiCameraAsync:
         self.camera.resolution = config.resolution
         self.camera.framerate = config.frame_rate
         self.raw_capture = PiRGBArray(self.camera, size=config.resolution)
+        self.stream = self.camera.capture_continuous(self.raw_capture,
+                                                     format="bgr", use_video_port=True)
         print("camera model: " + self.camera.revision)
         print("frame rate: " + str(self.camera.framerate))
         self.stopped = False
@@ -60,12 +62,20 @@ class CapturePiCameraAsync:
         return self.frame_queue.get()
 
     def _capture_thread(self):
-        while not self.stopped:
+        for f in self.stream:
+            if self.stopped:
+                break
+            frame = f.array
+            self.raw_capture.truncate(0)
             if not self.frame_queue.full():
-                self.camera.capture(self.raw_capture, format="bgr", use_video_port=True)
-                frame = self.raw_capture.array
-                self.raw_capture.truncate(0)
                 self.frame_queue.put(frame)
             else:
                 print("[WARNING] Capture queue is full, system cleans up whole queue. It will result in frame drops.")
-                self.frame_queue.clear()
+                self._clean_queue
+
+    def _clean_queue(self):
+        try:
+            while True:
+                self.frame_queue.get_nowait()
+        except Empty:
+            pass
