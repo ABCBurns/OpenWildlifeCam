@@ -66,12 +66,12 @@ class CapturePiCameraAsync:
             if self.stopped:
                 break
             frame = f.array
-            self.raw_capture.truncate(0)
             if not self.frame_queue.full():
                 self.frame_queue.put(frame)
             else:
                 print("[WARNING] Capture queue is full, system cleans up whole queue. It will result in frame drops.")
                 self._clean_queue
+            self.raw_capture.truncate(0)
 
     def _clean_queue(self):
         try:

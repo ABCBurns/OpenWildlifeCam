@@ -8,15 +8,16 @@ class MotionDetection:
     def __init__(self, config):
         self.average_frame = None
         self.config = config
+        self.frame_count = 0
+        self.scale_ratio = self.config.resolution[0]/self.config.motion_detection_width
 
     def detect_motion(self, frame_input):
         motion_detected = False
         rect_list = []
+        self.frame_count += 1
 
         # resize input frame, convert it to grayscale and blur it
-        frame_capture = imutils.resize(frame_input, width=400)
-        width_ratio = frame_input.shape[0] / frame_capture.shape[0]
-        height_ratio = frame_input.shape[0] / frame_capture.shape[0]
+        frame_capture = imutils.resize(frame_input, width=self.config.motion_detection_width)
         frame_gray = cv2.cvtColor(frame_capture, cv2.COLOR_BGR2GRAY)
         frame_gray = cv2.GaussianBlur(frame_gray, (21, 21), 0)
 
@@ -41,8 +42,13 @@ class MotionDetection:
         frame_delta_thresh = cv2.dilate(frame_delta_thresh, None, iterations=2)
 
         # extract contours an draw them in the origin frame
-        contours = cv2.findContours(frame_delta_thresh.copy(), cv2.RETR_EXTERNAL,
-                                    cv2.CHAIN_APPROX_SIMPLE)
+        if self.config.show_video:
+            contours = cv2.findContours(frame_delta_thresh.copy(), cv2.RETR_EXTERNAL,
+                                        cv2.CHAIN_APPROX_SIMPLE)
+        else:
+            contours = cv2.findContours(frame_delta_thresh, cv2.RETR_EXTERNAL,
+                                        cv2.CHAIN_APPROX_SIMPLE)
+
         contours = imutils.grab_contours(contours)
 
         # loop over the contours
@@ -65,7 +71,8 @@ class MotionDetection:
         scaled_rect_list = []
         for r in rect_list:
             scaled_rect_list.append(
-                (int(r[0] * width_ratio), int(r[1] * height_ratio), int(r[2] * width_ratio), int(r[3] * height_ratio)))
+                (int(r[0] * self.scale_ratio), int(r[1] * self.scale_ratio),
+                 int(r[2] * self.scale_ratio), int(r[3] * self.scale_ratio)))
 
         if self.config.show_video:
             # show the resulting frame

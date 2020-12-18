@@ -14,6 +14,7 @@
         480
     ],
     "fps": 16,
-    "min_area": 1000,
+    "motion_detection_width": 300,
+    "min_area": 400,
     "min_recording_time_seconds": 10
 }

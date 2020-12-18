@@ -56,6 +56,10 @@ class WildlifeConfig:
         return self.__config["delta_threshold"]
 
     @property
+    def motion_detection_width(self):
+        return self.__config["motion_detection_width"]
+
+    @property
     def min_area(self):
         return self.__config["min_area"]
 
