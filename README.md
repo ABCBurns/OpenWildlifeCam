@@ -74,9 +74,36 @@ sudo make install
 sudo ldconfig
 ```
 
+# Start WildLife 
+```
+// start software on development host
+./wildlife.py -c config.json
+
+// start software on raspberry pi
+./wildlife.py -c config_pi.json
+```
 # The WildLife Config
 ```
 // codecs
-x264, h264, mp4v
+{
+    "system" : "dev-host",
+    "show_video": true,
+    "store_video": true,
+    "store_codec": "mp4v",                // encoding format (e.g. x264, h264, mp4v)
+    "store_path": "./videostore",
+    "store_activity_count_threshold": 50,
+    "motion_detection": true,             // enable/disable motion detection
+    "motion_rectangle": true,             // enable/disable rectangle around motion area
+    "clean_store_on_startup": true,
+    "delta_threshold": 5,
+    "resolution": [
+        640,
+        480
+    ],
+    "fps": 30,
+    "motion_detection_width": 300,        // width of the input frame for the motion detction
+    "min_area": 400,
+    "min_recording_time_seconds": 10
+}
 ```
 

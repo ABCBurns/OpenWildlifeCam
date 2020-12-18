@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from multiprocessing import Queue
 from threading import Thread
 
@@ -31,8 +32,9 @@ class CapturePiCameraSync:
         self.camera.capture(self.raw_capture, format="bgr", use_video_port=True)
         # grab the raw numpy array
         frame = self.raw_capture.array
+        timestamp = datetime.now()
         self.raw_capture.truncate(0)
-        return frame
+        return frame, timestamp
 
 
 class CapturePiCameraAsync:
@@ -45,8 +47,8 @@ class CapturePiCameraAsync:
         self.raw_capture = PiRGBArray(self.camera, size=config.resolution)
         self.stream = self.camera.capture_continuous(self.raw_capture,
                                                      format="bgr", use_video_port=True)
-        print("camera model: " + self.camera.revision)
-        print("frame rate: " + str(self.camera.framerate))
+        print("[INFO] camera model: " + self.camera.revision)
+        print("[INFO] frame rate: " + str(self.camera.framerate))
         self.stopped = False
         self.frame_queue = Queue(128)
         time.sleep(0.1)
@@ -65,9 +67,10 @@ class CapturePiCameraAsync:
         for f in self.stream:
             if self.stopped:
                 break
+            timestamp = datetime.now()
             frame = f.array
             if not self.frame_queue.full():
-                self.frame_queue.put(frame)
+                self.frame_queue.put((frame, timestamp))
             else:
                 print("[WARNING] Capture queue is full, system cleans up whole queue. It will result in frame drops.")
                 self._clean_queue

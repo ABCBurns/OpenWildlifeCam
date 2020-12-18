@@ -89,7 +89,7 @@ fps = FPS().start()
 
 frame_count = 0
 while True:
-    frame = capture.read()
+    frame, frame_timestamp = capture.read()
 
     if frame is None:
         continue
@@ -110,7 +110,7 @@ while True:
         if recording_status == "OFF" and start_recording_threshold(activity_count_total):
             recording_status = "ON"
             recording_color = (0, 0, 255)
-            start_recording_time = timestamp
+            start_recording_time = frame_timestamp
             recording_filename = create_video_filename(start_recording_time, config.store_path)
             if config.store_video:
                 activity_count_during_recording = 0
@@ -133,10 +133,10 @@ while True:
         recording_color = (255, 255, 255)
 
     if config.store_video and recording_status == "ON":
-        recording_info = " | " + recording_filename + " " + str((timestamp - start_recording_time).seconds) + \
+        recording_info = " | " + recording_filename + " " + str((frame_timestamp - start_recording_time).seconds) + \
                          " activity: " + str(activity_count_during_recording)
 
-    timestamp_str = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
+    timestamp_str = frame_timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
     cv2.putText(frame, motion_status, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, motion_status_color, 2)
     cv2.putText(frame, recording_status, (frame.shape[1] - 50, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.35, recording_color, 2)
     cv2.putText(frame, timestamp_str + recording_info, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35

@@ -1,3 +1,4 @@
+from datetime import datetime
 import cv2
 
 
@@ -22,4 +23,5 @@ class CaptureOpencv:
 
     def read(self):
         ret, frame = self.cap.read()
-        return frame
+        timestamp = datetime.now()
+        return frame, timestamp
