@@ -18,7 +18,7 @@ class AsyncVideoWriter:
         self.activity_count = 0
         self.is_writing = False
         self.filename = None
-        self.frame_queue = Queue(256)
+        self.frame_queue = Queue(1024)
         self.writer_thread = None
 
     def start(self, filename):
