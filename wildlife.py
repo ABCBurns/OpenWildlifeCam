@@ -19,7 +19,7 @@ exit_by_handler = False
 
 def signal_handler(signal_received, f):
     global exit_by_handler
-    print('SIGINT or CTRL-C detected. Exiting gracefully')
+    print('[INFO] SIGINT or CTRL-C detected. Exiting gracefully')
     exit_by_handler = True
 
 
@@ -158,8 +158,8 @@ while True:
 
 # shutdown
 fps.stop()
-print("elapsed time: {:.2f} s".format(fps.elapsed()))
-print("approx. FPS: {:.2f}".format(fps.fps()))
+print("[INFO] elapsed time: {:.2f} s".format(fps.elapsed()))
+print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 writer.stop(0)
 capture.stop()
 if config.show_video:

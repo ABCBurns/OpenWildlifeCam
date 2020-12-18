@@ -28,7 +28,7 @@ class AsyncVideoWriter:
             self.filename = filename
             self.writer_thread = Thread(target=self._writer_thread, args=())
             self.writer_thread.start()
-            print("AsyncVideoWriter start {:.2f} s".format(time.perf_counter()))
+            print("[INFO] start recording {} {:.2f} s".format(self.filename, time.perf_counter()))
             return True
         return False
 
@@ -40,7 +40,8 @@ class AsyncVideoWriter:
             # never block the main processing loop
             # if self.writer_thread is not None:
             #    self.writer_thread.join()
-            print("AsyncVideoWriter stop {:.2f} s, activity: {}".format(self.stop_time, activity_count))
+            print("[INFO] stop recording {} {:.2f} s, activity: {}"
+                  .format(self.filename, self.stop_time, activity_count))
 
     def write(self, frame):
         if not self.stopped:
@@ -65,11 +66,11 @@ class AsyncVideoWriter:
             video_out.write(frame)
 
         finished_time = time.perf_counter()
-        print("AsyncVideoWriter encoding and writing finished {:.2f} s, time lag {:.2f} s"
-              .format(finished_time, finished_time-self.stop_time))
+        print("[INFO] encoding finished {} {:.2f} s, time lag {:.2f} s"
+              .format(self.filename, finished_time, finished_time-self.stop_time))
         video_out.release()
         if self.activity_count < self.config.store_activity_count_threshold:
-            print("AsyncVideoWriter remove recording due to less activity {}".format(self.activity_count))
+            print("[INFO] remove recording {} due to less activity {}".format(self.filename, self.activity_count))
             os.remove(self.filename)
         self.is_writing = False
 
