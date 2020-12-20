@@ -7,6 +7,7 @@ source activate wildlife
 
 conda install -c conda-forge opencv=4.1.0
 conda install -c conda-forge imutils
+conda install -c conda-forge python-telegram-bot
 ```
 
 # Setup Raspberry Pi 2 for Wildlife Project
@@ -41,6 +42,7 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 2
 pip3 install numpy
 pip3 install picamera
 pip3 install imutils
+pip3 install python-telegram-bot
 
 // Install the required developer tools and packages
 sudo apt-get install build-essential cmake pkg-config
