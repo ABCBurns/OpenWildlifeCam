@@ -7,7 +7,8 @@ source activate wildlife
 
 conda install -c conda-forge opencv=4.1.0
 conda install -c conda-forge imutils
-conda install -c conda-forge python-telegram-bot
+// conda install -c conda-forge python-telegram-bot
+pip install telepot
 ```
 
 # Setup Raspberry Pi 2 for Wildlife Project
@@ -26,6 +27,7 @@ sudo apt install -y libjasper1
 conda install -y -c microsoft-ell/label/stretch opencv
 pip install imutils
 pip install picamera
+pip install telepot
 
 source activate wildlife
 ```
@@ -42,7 +44,7 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 2
 pip3 install numpy
 pip3 install picamera
 pip3 install imutils
-pip3 install python-telegram-bot
+pip3 install telepot
 
 // Install the required developer tools and packages
 sudo apt-get install build-essential cmake pkg-config
