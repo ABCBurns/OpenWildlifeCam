@@ -55,6 +55,7 @@ stop_recording_time = None
 video_out = None
 activity_count_total = 0
 activity_count_during_recording = 0
+last_recording_snapshot = None
 
 signal(SIGINT, signal_handler)
 
@@ -82,15 +83,17 @@ if config.telegram_notification:
 
 def writer_finished(file_name):
     global notifier
-    if notifier is not None:
-        notifier.send_message("New Wildlife Video: {}".format(file_name))
+    if notifier is not None and last_recording_snapshot is not None:
+        snapshot_filename = file_name.rsplit('.', 1)[0] + '.jpg'
+        cv2.imwrite(snapshot_filename, last_recording_snapshot)
+        notifier.send_message("New Wildlife Video: {}".format(file_name), snapshot_filename)
 
 
 capture = Capture(config)
 
 writer = AsyncVideoWriter(config, writer_finished)
 
-md = MotionDetection(config)
+motion = MotionDetection(config)
 
 motion_detected = False
 motion_rectangles = [(0, 0, config.resolution[0], config.resolution[1])]
@@ -111,7 +114,7 @@ while True:
     timestamp = datetime.datetime.now()
 
     if config.motion_detection and frame_count % 3 == 0:
-        motion_detected, motion_rectangles = md.detect_motion(frame)
+        motion_detected, motion_rectangles = motion.detect_motion(frame)
 
     motion_status = "activity"
     motion_status_color = (255, 255, 255)
@@ -129,6 +132,9 @@ while True:
                 writer.start(recording_filename)
 
         activity_count_during_recording += 1
+        if activity_count_during_recording == config.store_activity_count_threshold + 1:
+            last_recording_snapshot = frame.copy()
+
         motion_status = "activity"
         motion_status_color = (0, 255, 0)
         if motion_rectangles is not None:
