@@ -12,6 +12,7 @@ from imutils.video import FPS
 
 from config import WildlifeConfig
 from motion import MotionDetection
+from notifier import TelegramNotifier
 from video_writer import AsyncVideoWriter
 
 exit_by_handler = False
@@ -74,9 +75,20 @@ if config.system == "raspberrypi":
 else:
     from capture_opencv import CaptureOpencv as Capture
 
+notifier = None
+if config.telegram_notification:
+    notifier = TelegramNotifier(config)
+
+
+def writer_finished(file_name):
+    global notifier
+    if notifier is not None:
+        notifier.send_message("New Wildlife Video: {}".format(file_name))
+
+
 capture = Capture(config)
 
-writer = AsyncVideoWriter(config)
+writer = AsyncVideoWriter(config, writer_finished)
 
 md = MotionDetection(config)
 

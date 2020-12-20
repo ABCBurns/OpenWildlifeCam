@@ -9,7 +9,7 @@ import cv2
 class AsyncVideoWriter:
     """Video Writer"""
 
-    def __init__(self, config):
+    def __init__(self, config, finished=None):
         self.config = config
         self.fourcc = cv2.VideoWriter_fourcc(*self.config.store_codec)
         self.video_out = None
@@ -20,6 +20,7 @@ class AsyncVideoWriter:
         self.filename = None
         self.frame_queue = Queue(1024)
         self.writer_thread = None
+        self.finished = finished
 
     def start(self, filename):
         if not self.is_writing:
@@ -72,6 +73,9 @@ class AsyncVideoWriter:
         if self.activity_count < self.config.store_activity_count_threshold:
             print("[INFO] remove recording {} due to less activity {}".format(self.filename, self.activity_count))
             os.remove(self.filename)
+        else:
+            if self.finished is not None:
+                self.finished(self.filename)
         self.is_writing = False
 
     def _clean_queue(self):

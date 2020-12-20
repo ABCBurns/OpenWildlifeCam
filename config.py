@@ -68,6 +68,10 @@ class WildlifeConfig:
         return self.__config["min_recording_time_seconds"]
 
     @property
+    def telegram_notification(self):
+        return self.__config["telegram_notification"]
+
+    @property
     def telegram_token(self):
         return self.__config["telegram_token"]
 
