@@ -86,7 +86,7 @@ def writer_finished(file_name):
     if notifier is not None and last_recording_snapshot is not None:
         snapshot_filename = file_name.rsplit('.', 1)[0] + '.jpg'
         cv2.imwrite(snapshot_filename, last_recording_snapshot)
-        notifier.send_message("New Wildlife Video: {}".format(file_name), snapshot_filename)
+        notifier.send_message("New Wildlife Video: {}".format(os.path.basename(file_name)), snapshot_filename)
 
 
 capture = Capture(config)
