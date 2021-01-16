@@ -17,7 +17,7 @@
     "motion_detection_width": 300,
     "min_area": 400,
     "min_recording_time_seconds": 10,
-    "telegram_notification": true,
+    "telegram_notification": false,
     "telegram_token": "<insert token>",
     "telegram_token": "<insert chat id>"
 }

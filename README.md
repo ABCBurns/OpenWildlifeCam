@@ -1,4 +1,6 @@
-# Setup Development Host for Wildlife Project
+# Open Wildlife Cam
+
+## Setup Development Host for Wildlife Project
 
 ## Create Python conda environment
 ```
@@ -11,8 +13,8 @@ conda install -c conda-forge imutils
 pip install telepot
 ```
 
-# Setup Raspberry Pi 2 for Wildlife Project
-## Solution 1: Install conda environment with precompiled opencv on raspberry pi
+## Setup Raspberry Pi2 for Wildlife Project
+### Solution 1: Install conda environment with precompiled opencv on Raspberry Pi 2
 ```
 wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-armv7l.sh
 chmod 755 Miniconda3-latest-Linux-armv7l.sh
@@ -32,7 +34,7 @@ pip install telepot
 source activate wildlife
 ```
 
-## Solution 2: Compile and install opencv on raspberry pi 2
+### Solution 2: Compile and install OpenCV on Raspberry Pi 2
 ```
 // updating and upgrading installed packages
 sudo apt-get update
@@ -78,15 +80,19 @@ sudo make install
 sudo ldconfig
 ```
 
-# Start WildLife 
-```
-// start software on development host
-./wildlife.py -c config.json
+## Start Open WildLife Cam
 
-// start software on raspberry pi
+###  Start software on development host
+```
+./wildlife.py -c config.json
+```
+
+### Start software on Raspberry PI
+```
 ./wildlife.py -c config_pi.json
 ```
-# The WildLife Config
+
+### The WildLife Config
 ```
 // codecs
 {
@@ -108,6 +114,9 @@ sudo ldconfig
     "motion_detection_width": 300,        // width of the input frame for the motion detction
     "min_area": 400,
     "min_recording_time_seconds": 10
+    "telegram_notification": false,
+    "telegram_token": "<insert token>",
+    "telegram_token": "<insert chat id>"
 }
 ```
 
