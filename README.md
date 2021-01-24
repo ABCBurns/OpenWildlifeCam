@@ -1,11 +1,11 @@
 # Open Wildlife Cam
 
-## Setup Development Host for Wildlife Project
+## Setup Development Host for OpenWildlifeCam Project
 
 ## Create Python conda environment
 ```
-conda create --name wildlife python=3.8
-source activate wildlife
+conda create --name OpenWildlifeCam python=3.8
+source activate OpenWildlifeCam
 
 conda install -c conda-forge opencv=4.1.0
 conda install -c conda-forge imutils
@@ -13,8 +13,8 @@ conda install -c conda-forge imutils
 pip install telepot
 ```
 
-## Setup Raspberry Pi2 for Wildlife Project
-### Solution 1: Install conda environment with precompiled opencv on Raspberry Pi 2
+## Setup Raspberry Pi2 for OpenWildlifeCam Project
+### Option 1: Install conda environment with precompiled opencv on Raspberry Pi 2
 ```
 wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-armv7l.sh
 chmod 755 Miniconda3-latest-Linux-armv7l.sh
@@ -34,7 +34,7 @@ pip install telepot
 source activate wildlife
 ```
 
-### Solution 2: Compile and install OpenCV on Raspberry Pi 2
+### Option 2: Compile and install OpenCV on Raspberry Pi 2
 ```
 // updating and upgrading installed packages
 sudo apt-get update
@@ -80,7 +80,7 @@ sudo make install
 sudo ldconfig
 ```
 
-## Start Open WildLife Cam
+## Start OpenWildLifeCam
 
 ###  Start software on development host
 ```
@@ -92,7 +92,7 @@ sudo ldconfig
 ./wildlife.py -c config_pi.json
 ```
 
-### The WildLife Config
+### The OpenWildLifeCam Config
 ```
 // codecs
 {
